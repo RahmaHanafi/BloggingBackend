@@ -10,12 +10,12 @@ import {
 
 /* eslint-disable prettier/prettier */
 export class LoginWithDTO {
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: 'Please, Enter correct email' })
+  @IsNotEmpty({ message: 'Email is required!' })
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Password is required!' })
   password: string;
 
   @IsBoolean()

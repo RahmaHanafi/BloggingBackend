@@ -11,21 +11,21 @@ import {
 export class UserWithDTO {
   @IsString()
   @MinLength(3)
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'User Name is required!' })
   userName: string;
 
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: 'Please, Enter correct email' })
+  @IsNotEmpty({ message: 'Email is required!' })
   email: string;
 
   @IsString()
-  @MinLength(8)
-  @IsNotEmpty()
+  @MinLength(8, { message: 'Password is too short!' })
+  @IsNotEmpty({ message: 'password is required!' })
   password: string;
 
   @IsString()
-  @MinLength(8)
-  @IsNotEmpty()
+  @MinLength(8, { message: 'Confirm password is too short!' })
+  @IsNotEmpty({ message: 'Confrirm password is required!' })
   confirmPassword: string;
 
   @IsString()

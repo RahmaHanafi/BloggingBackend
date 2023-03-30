@@ -75,7 +75,36 @@ export class UserController {
   }
 
   @userRoles(Role.User)
-  @Patch('upload/')
+  @Patch('uploadProfileImg')
+  // @UseInterceptors(
+  //   FileInterceptor('profileImg', {
+  //     storage: diskStorage({
+  //       // destination: './uploads',
+  //       filename: (req, file, callback) => {
+  //         callback(null, `${Date.now()}.${extname(file.originalname)}`);
+  //       },
+  //     }),
+  //     fileFilter: (req, file, cb) => {
+  //       if (file.mimetype.startsWith('image')) {
+  //         cb(null, true);
+  //       } else {
+  //         cb(null, false);
+  //       }
+  //     },
+  //   }),
+  // )
+  async uploadFile(
+    @Body() profileImg: string,
+    // @UploadedFile() file: Express.Multer.File,
+    @Headers('Authorization') token: any,
+  ) {
+    console.log(profileImg);
+    // let uploadImg = await this.firebaseService.uploadImage(file);
+    const decodedJwtAccessToken = this.jwtService.decode(token);
+    return this.userService.uploadFile(profileImg, decodedJwtAccessToken);
+  }
+
+  @Post('uploadProfileImg')
   @UseInterceptors(
     FileInterceptor('profileImg', {
       storage: diskStorage({
@@ -93,14 +122,12 @@ export class UserController {
       },
     }),
   )
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-    @Headers('Authorization') token: any,
-  ) {
-    console.log(file);
-    let uploadImg = await this.firebaseService.uploadImage(file);
-    const decodedJwtAccessToken = this.jwtService.decode(token);
-    return this.userService.uploadFile(uploadImg, decodedJwtAccessToken);
+  async UploadProfileImg(@UploadedFile() file: Express.Multer.File) {
+    if (file) {
+      let profileImg: any = await this.firebaseService.uploadImage(file);
+      return { message: 'Uploaded profile Image successfully', profileImg };
+      // console.log(file);
+    }
   }
 
   // let upload = multer({ storage: store }).single('file');

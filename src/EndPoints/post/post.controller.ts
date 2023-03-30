@@ -36,33 +36,33 @@ export class PostController {
   @userRoles(Role.User)
   @UsePipes(ValidationPipe)
   @Post()
-  @UseInterceptors(
-    FileInterceptor('postImg', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, callback) => {
-          callback(null, `${Date.now()}.${extname(file.originalname)}`);
-        },
-      }),
-      fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image')) {
-          cb(null, true);
-        } else {
-          cb(null, false);
-        }
-      },
-    }),
-  )
+  // @UseInterceptors(
+  //   FileInterceptor('postImg', {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //       filename: (req, file, callback) => {
+  //         callback(null, `${Date.now()}.${extname(file.originalname)}`);
+  //       },
+  //     }),
+  //     fileFilter: (req, file, cb) => {
+  //       if (file.mimetype.startsWith('image')) {
+  //         cb(null, true);
+  //       } else {
+  //         cb(null, false);
+  //       }
+  //     },
+  //   }),
+  // )
   async create(
     @Body() createPostDto: PostWithDTO,
-    @UploadedFile() file: Express.Multer.File,
+    // @UploadedFile() file: Express.Multer.File,
     @Headers('Authorization') token: any,
   ) {
-    if (file) {
-      let uploadImg: any = await this.firebaseService.uploadImage(file);
-      createPostDto.postImg = uploadImg;
-      console.log(file);
-    }
+    // if (file) {
+    //   let uploadImg: any = await this.firebaseService.uploadImage(file);
+    //   createPostDto.postImg = uploadImg;
+    //   console.log(file);
+    // }
     const decodedJwtAccessToken = this.jwtService.decode(token);
     return this.postService.create(createPostDto, decodedJwtAccessToken);
   }
@@ -89,6 +89,45 @@ export class PostController {
   @userRoles(Role.User)
   @UsePipes(ValidationPipe)
   @Patch(':id')
+  // @UseInterceptors(
+  //   FileInterceptor('postImg', {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //       filename: (req, file, callback) => {
+  //         callback(null, `${Date.now()}.${extname(file.originalname)}`);
+  //       },
+  //     }),
+  //     fileFilter: (req, file, cb) => {
+  //       if (file.mimetype.startsWith('image')) {
+  //         cb(null, true);
+  //       } else {
+  //         cb(null, false);
+  //       }
+  //     },
+  //   }),
+  // )
+  async update(
+    @Param('id') _id: ObjectId,
+    @Body() updatePostDto: UpdatePostDto,
+    // @UploadedFile() file: Express.Multer.File,
+    @Headers('Authorization') token: any,
+  ) {
+    const decodedJwtAccessToken = this.jwtService.decode(token);
+    // if (file) {
+    //   let uploadImg: any = await this.firebaseService.uploadImage(file);
+    //   updatePostDto.postImg = uploadImg;
+    //   console.log(file);
+    // }
+    return this.postService.update(_id, updatePostDto, decodedJwtAccessToken);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') _id: ObjectId, @Headers('Authorization') token: any) {
+    const decodedJwtAccessToken = this.jwtService.decode(token);
+    return this.postService.remove(_id, decodedJwtAccessToken);
+  }
+
+  @Post('uploadPostImg')
   @UseInterceptors(
     FileInterceptor('postImg', {
       storage: diskStorage({
@@ -106,27 +145,13 @@ export class PostController {
       },
     }),
   )
-  async update(
-    @Param('id') _id: ObjectId,
-    @Body() updatePostDto: UpdatePostDto,
-    @UploadedFile() file: Express.Multer.File,
-    @Headers('Authorization') token: any,
-  ) {
-    const decodedJwtAccessToken = this.jwtService.decode(token);
+  async UploadPostImg(@UploadedFile() file: Express.Multer.File) {
     if (file) {
-      let uploadImg: any = await this.firebaseService.uploadImage(file);
-      updatePostDto.postImg = uploadImg;
-      console.log(file);
+      let postImg: any = await this.firebaseService.uploadImage(file);
+      return { message: 'Uploaded Image successfully', postImg };
+      // console.log(file);
     }
-    return this.postService.update(_id, updatePostDto, decodedJwtAccessToken);
   }
-
-  @Delete(':id')
-  remove(@Param('id') _id: ObjectId, @Headers('Authorization') token: any) {
-    const decodedJwtAccessToken = this.jwtService.decode(token);
-    return this.postService.remove(_id, decodedJwtAccessToken);
-  }
-
   // @Post('')
   // @UseInterceptors(
   //   FileInterceptor('postImg', {

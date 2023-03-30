@@ -45,24 +45,10 @@ export class PostService {
       throw new NotFoundException('No Post has this ID!');
     }
 
-    // console.log(decodedJwtAccessToken._id, Post.userId.toString());
-
     if (Post.userId.toString() !== decodedJwtAccessToken._id) {
       throw new BadRequestException('No premission to access this post');
     }
 
-    // let recivedJWT = context.switchToHttp().getRequest().header('x-auth-token');
-    // const AuthUser =
-
-    // createParamDecorator((data, req) => {
-    //   return req.user;
-    // });
-
-    // console.log(AuthUser);
-
-    // if(AuthUser.!== Post.userId){
-
-    // }
     return { statusCode: 200, Post };
   }
 
