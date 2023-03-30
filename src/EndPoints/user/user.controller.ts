@@ -24,6 +24,8 @@ import { UserWithDTO } from './DTO/userModelWithDTO';
 import { LoginWithDTO } from './DTO/loginModelWDTO';
 import { UserUpdateWithDTO } from './DTO/userUpdateDTO';
 import { FirebaseService } from './../../firebase/firebase.service';
+import { Headers } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 // @Controller('firebase')
 @Controller('user')
@@ -31,6 +33,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly firebaseService: FirebaseService,
+    private jwtService: JwtService,
   ) {}
   @UsePipes(ValidationPipe)
   @Post('register')
@@ -53,20 +56,26 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  // @userRoles(Role.User)
-  @Get(':id')
-  findOne(@Param('id') id: ObjectId) {
-    return this.userService.findOne(id);
-  }
-
-  @UsePipes(ValidationPipe)
-  @Patch(':id')
-  update(@Param('id') id: ObjectId, @Body() updateUserDto: UserUpdateWithDTO) {
-    return this.userService.update(id, updateUserDto);
+  @userRoles(Role.User)
+  @Get()
+  findOne(@Headers('x-auth-token') token: any) {
+    const decodedJwtAccessToken = this.jwtService.decode(token);
+    return this.userService.findOne(decodedJwtAccessToken);
   }
 
   @userRoles(Role.User)
-  @Patch('upload/:id')
+  @UsePipes(ValidationPipe)
+  @Patch()
+  update(
+    @Headers('x-auth-token') token: any,
+    @Body() updateUserDto: UserUpdateWithDTO,
+  ) {
+    const decodedJwtAccessToken = this.jwtService.decode(token);
+    return this.userService.update(decodedJwtAccessToken, updateUserDto);
+  }
+
+  @userRoles(Role.User)
+  @Patch('upload/')
   @UseInterceptors(
     FileInterceptor('profileImg', {
       storage: diskStorage({
@@ -86,11 +95,12 @@ export class UserController {
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-    @Param('id') _id: ObjectId,
+    @Headers('x-auth-token') token: any,
   ) {
     console.log(file);
     let uploadImg = await this.firebaseService.uploadImage(file);
-    return this.userService.uploadFile(uploadImg, _id);
+    const decodedJwtAccessToken = this.jwtService.decode(token);
+    return this.userService.uploadFile(uploadImg, decodedJwtAccessToken);
   }
 
   // let upload = multer({ storage: store }).single('file');

@@ -89,16 +89,19 @@ export class UserService {
     return AllUsers;
   }
 
-  async findOne(_id: ObjectId) {
-    let user = await this.UserModel.findOne({ _id });
+  async findOne(decodedJwtAccessToken: any) {
+    let user = await this.UserModel.findOne({ _id: decodedJwtAccessToken._id });
     if (!user) {
       throw new BadRequestException('No user has this ID!');
     }
     return { statusCode: 200, user };
   }
 
-  async update(_id: ObjectId, User: UserUpdateWithDTO) {
-    let updateUser = await this.UserModel.updateOne({ _id }, { $set: User });
+  async update(decodedJwtAccessToken: any, User: UserUpdateWithDTO) {
+    let updateUser = await this.UserModel.updateOne(
+      { _id: decodedJwtAccessToken._id },
+      { $set: User },
+    );
     return {
       statusCode: 200,
       message: 'updated data successfully',
@@ -106,9 +109,9 @@ export class UserService {
     };
   }
 
-  async uploadFile(fileName: any, _id: ObjectId) {
+  async uploadFile(fileName: any, decodedJwtAccessToken: any) {
     let data = await this.UserModel.updateOne(
-      { _id },
+      { _id: decodedJwtAccessToken._id },
       {
         $set: {
           profileImg: fileName,
