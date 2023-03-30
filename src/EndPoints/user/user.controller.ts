@@ -57,7 +57,7 @@ export class UserController {
   }
 
   @userRoles(Role.User)
-  @Get()
+  @Get('myAccount')
   findOne(@Headers('x-auth-token') token: any) {
     const decodedJwtAccessToken = this.jwtService.decode(token);
     return this.userService.findOne(decodedJwtAccessToken);
