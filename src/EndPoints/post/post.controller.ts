@@ -56,7 +56,7 @@ export class PostController {
   async create(
     @Body() createPostDto: PostWithDTO,
     @UploadedFile() file: Express.Multer.File,
-    @Headers('x-auth-token') token: any,
+    @Headers('Authorization') token: any,
   ) {
     if (file) {
       let uploadImg: any = await this.firebaseService.uploadImage(file);
@@ -74,7 +74,7 @@ export class PostController {
 
   @userRoles(Role.User)
   @Get(':id')
-  findOne(@Param('id') _id: ObjectId, @Headers('x-auth-token') token: any) {
+  findOne(@Param('id') _id: ObjectId, @Headers('Authorization') token: any) {
     // console.log(token);
 
     const decodedJwtAccessToken = this.jwtService.decode(token);
@@ -110,7 +110,7 @@ export class PostController {
     @Param('id') _id: ObjectId,
     @Body() updatePostDto: UpdatePostDto,
     @UploadedFile() file: Express.Multer.File,
-    @Headers('x-auth-token') token: any,
+    @Headers('Authorization') token: any,
   ) {
     const decodedJwtAccessToken = this.jwtService.decode(token);
     if (file) {
@@ -122,7 +122,7 @@ export class PostController {
   }
 
   @Delete(':id')
-  remove(@Param('id') _id: ObjectId, @Headers('x-auth-token') token: any) {
+  remove(@Param('id') _id: ObjectId, @Headers('Authorization') token: any) {
     const decodedJwtAccessToken = this.jwtService.decode(token);
     return this.postService.remove(_id, decodedJwtAccessToken);
   }

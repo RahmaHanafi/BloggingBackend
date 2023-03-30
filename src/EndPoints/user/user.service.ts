@@ -79,8 +79,8 @@ export class UserService {
     // const decodedJwtAccessToken = this.jwtService.decode(myJwt);
     // console.log(decodedJwtAccessToken);
 
-    res.header('x-auth-token', myJwt);
-    res.cookie('x-auth-token', myJwt, { httpOnly: true });
+    res.header('Authorization', myJwt);
+    res.cookie('Authorization', myJwt, { httpOnly: true });
     return { message: 'Login successfully', token: myJwt, user: isExist };
   }
 

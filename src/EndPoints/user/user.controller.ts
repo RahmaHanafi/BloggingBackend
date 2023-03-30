@@ -58,7 +58,7 @@ export class UserController {
 
   @userRoles(Role.User)
   @Get('myAccount')
-  findOne(@Headers('x-auth-token') token: any) {
+  findOne(@Headers('Authorization') token: any) {
     const decodedJwtAccessToken = this.jwtService.decode(token);
     return this.userService.findOne(decodedJwtAccessToken);
   }
@@ -67,7 +67,7 @@ export class UserController {
   @UsePipes(ValidationPipe)
   @Patch()
   update(
-    @Headers('x-auth-token') token: any,
+    @Headers('Authorization') token: any,
     @Body() updateUserDto: UserUpdateWithDTO,
   ) {
     const decodedJwtAccessToken = this.jwtService.decode(token);
@@ -95,7 +95,7 @@ export class UserController {
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-    @Headers('x-auth-token') token: any,
+    @Headers('Authorization') token: any,
   ) {
     console.log(file);
     let uploadImg = await this.firebaseService.uploadImage(file);
