@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  NotFoundException,
   UploadedFile,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,6 +17,7 @@ import { Response } from 'express';
 import { UserWithDTO } from './DTO/userModelWithDTO';
 import { LoginWithDTO } from './DTO/loginModelWDTO';
 import { UserUpdateWithDTO } from './DTO/userUpdateDTO';
+import { UserProfileImgWithDTO } from './DTO/userProfileImgDTO';
 
 let UserProjection = {
   confirmPassword: false,
@@ -109,18 +111,22 @@ export class UserService {
     };
   }
 
-  async uploadFile(fileName: any, decodedJwtAccessToken: any) {
+  async uploadImgFile(
+    decodedJwtAccessToken: any,
+    profileImg: UserProfileImgWithDTO,
+  ) {
+    if (!profileImg) {
+      throw new NotFoundException('profile Image is required');
+    }
     let data = await this.UserModel.updateOne(
       { _id: decodedJwtAccessToken._id },
       {
-        $set: {
-          profileImg: fileName,
-        },
+        $set: profileImg,
       },
     );
     return {
       statusCode: 200,
-      message: 'updated data successfully',
+      message: 'updated profile picture successfully',
       data,
     };
   }

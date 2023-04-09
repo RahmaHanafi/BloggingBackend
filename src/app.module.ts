@@ -16,6 +16,7 @@ import { FirebaseService } from './firebase/firebase.service';
     PostModule,
     MongooseModule.forRoot(
       'mongodb+srv://rahmahanafi:iqzC8CDVB4zTK4w@blogging.sqnc3fe.mongodb.net/?retryWrites=true&w=majority',
+      // 'mongodb://127.0.0.1:27017/blog',
     ),
     JwtModule.register({ secret: 'secret', signOptions: { expiresIn: '1d' } }),
   ],

@@ -26,6 +26,7 @@ import { UserUpdateWithDTO } from './DTO/userUpdateDTO';
 import { FirebaseService } from './../../firebase/firebase.service';
 import { Headers } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UserProfileImgWithDTO } from './DTO/userProfileImgDTO';
 
 // @Controller('firebase')
 @Controller('user')
@@ -75,33 +76,16 @@ export class UserController {
   }
 
   @userRoles(Role.User)
-  @Patch('uploadProfileImg')
-  // @UseInterceptors(
-  //   FileInterceptor('profileImg', {
-  //     storage: diskStorage({
-  //       // destination: './uploads',
-  //       filename: (req, file, callback) => {
-  //         callback(null, `${Date.now()}.${extname(file.originalname)}`);
-  //       },
-  //     }),
-  //     fileFilter: (req, file, cb) => {
-  //       if (file.mimetype.startsWith('image')) {
-  //         cb(null, true);
-  //       } else {
-  //         cb(null, false);
-  //       }
-  //     },
-  //   }),
-  // )
-  async uploadFile(
-    @Body() profileImg: string,
-    // @UploadedFile() file: Express.Multer.File,
+  @UsePipes(ValidationPipe)
+  @Patch('uploadProfileImage')
+  async uploadImgFile(
     @Headers('Authorization') token: any,
+    @Body() profileImg: UserProfileImgWithDTO,
   ) {
     console.log(profileImg);
     // let uploadImg = await this.firebaseService.uploadImage(file);
     const decodedJwtAccessToken = this.jwtService.decode(token);
-    return this.userService.uploadFile(profileImg, decodedJwtAccessToken);
+    return this.userService.uploadImgFile(decodedJwtAccessToken, profileImg);
   }
 
   @Post('uploadProfileImg')
